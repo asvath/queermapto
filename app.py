@@ -23,7 +23,15 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.caption("Explore Toronto’s queer history and community with this interactive map of active and historical spaces.")
+st.caption(
+    "Explore Toronto’s queer history and community with this interactive map of active and historical spaces.\n\n"
+    "**Acknowledgment & Credits** — QueerMapTO builds on the "
+    "[**Queer Spaces Database**](https://torontosocietyofarchitects.ca/toronto-queer-spaces/) "
+    "created by volunteers of the Toronto Society of Architects (TSA). It also incorporates contributions "
+    "from community members (including those who added memories to the 2024 Pride Street Fair map) and the "
+    "University of Waterloo School of Architecture class. References and source materials are credited in "
+    "TSA's Queer Spaces Database."
+)
 
 # ---------------------------
 # Load & clean
@@ -146,60 +154,6 @@ for t in sorted(dfa["Category"].dropna().unique().tolist()):
     legend_rows.append((t, icon, color))
 legend_rows.append(("Closed (Historical)", ICON_CLOSED[0], ICON_CLOSED[1]))
 IconLegend(legend_rows, LEGEND_HTML).add_to(m)
-
-# footer spacer + credits (collapsed by default)
-m.get_root().html.add_child(Element('<div style="height:44px;"></div>'))
-footer_tpl = Template("""
-{% macro html(this, kwargs) %}
-<div id="credits-box" style="
-     position: fixed; bottom: 0; left: 0; width: 100%;
-     background: rgba(255,255,255,0.94);
-     font-size: 12px; font-family: Arial, sans-serif; line-height: 1.45;
-     box-shadow: 0 -1px 6px rgba(0,0,0,0.18); z-index: 250; pointer-events: none;">
-  <div id="credits-header" style="padding:8px 16px; cursor:pointer; font-weight:700;"
-       onclick="var c=document.getElementById('credits-content');
-                var h=document.getElementById('credits-header');
-                if(c.style.display==='none'){c.style.display='block'; h.innerHTML='Acknowledgment & Credits ▲';}
-                else{c.style.display='none'; h.innerHTML='Acknowledgment & Credits ▼';}">
-    Acknowledgment & Credits ▼
-  </div>
-  <div id="credits-content" style="display:none; padding:0 16px 12px 16px;">
-    <div style="margin-bottom:10px;">
-      QueerMapTO builds on the 
-      <a href="https://torontosocietyofarchitects.ca/toronto-queer-spaces/" target="_blank" rel="noopener noreferrer">
-        <b>Queer Spaces database</b>
-      </a> created by the volunteers of the Toronto Society of Architects (TSA).
-    </div>
-    <div style="margin-bottom:10px;">
-      The TSA database was made possible thanks to the efforts of countless individuals including
-      Janice M., Kurtis C., Joël L., Amanda E., Cherisse T., Eric W., Kate R., Rebecca P., Ryan F.,
-      Samantha B., Simon L., and Spencer L.
-    </div>
-    <div style="margin-bottom:10px;">
-      It also incorporates contributions from members of the community, including the over one
-      thousand individuals who added their memories to the 2024 Pride Street Fair map and the
-      class at the University of Waterloo School of Architecture, who helped to digitize these
-      memories.
-    </div>
-    <div style="margin-bottom:10px;">
-      References and source materials are credited in the TSA database. 
-      Please see the TSA site for the full bibliography.
-    </div>
-  </div>
-</div>
-{% endmacro %}
-""")
-
-class Footer(MacroElement):
-    def __init__(self):
-        super().__init__()
-        self._template = footer_tpl
-
-# spacer so map controls don't sit under the footer
-m.get_root().html.add_child(Element('<div style="height:44px;"></div>'))
-
-# add the footer macro to the map root
-m.get_root().add_child(Footer())
 
 # render
 st_folium(m, height=720, width=None)
