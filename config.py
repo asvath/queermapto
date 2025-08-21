@@ -11,14 +11,12 @@ STATUS_COL = "Active, closed or moved?"
 SPACE_COL  = "Space"
 COORDS_COL = "Coordinates"
 
-ACTIVE_VALS = {"active", "open", "currently active"}
-
 # Font Awesome 4.7 icon names + folium colors
 ICON_MAP_ACTIVE = {
-    "Bar/Club/Restaurant": ("glass", "pink"),
+    "Bar/Club/Restaurant": ("cutlery", "pink"),
     "Bathhouse": ("tint", "blue"),
     "Open Space": ("tree", "green"),
-    "Public Art": ("star", "purple"),
+    "Public Art": ("paint-brush", "purple"),
     "Community Centre": ("home", "orange"),
     "Church": ("plus", "cadetblue"),          # FA4 has no 'cross'; 'plus' reads like a cross
     "Retail": ("shopping-cart", "lightred"),
