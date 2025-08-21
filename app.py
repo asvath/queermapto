@@ -14,6 +14,8 @@ st.set_page_config(page_title="Queer Toronto Map", layout="wide")
 st.markdown(
     """
     <h1 style="display:flex; align-items:center; gap:12px;">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Canada_%28Pantone%29.svg/320px-Flag_of_Canada_%28Pantone%29.svg.png" 
+           alt="Canadian Flag" width="40">
       <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Gay_Pride_Flag.svg/240px-Gay_Pride_Flag.svg.png" 
            alt="Pride Flag" width="40">
       Map of Queer Spaces in Toronto
