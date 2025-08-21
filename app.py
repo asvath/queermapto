@@ -53,7 +53,7 @@ dfc = df[mask_types & (df[STATUS_COL] != "active")].copy()
 # Build map
 # ---------------------------
 TORONTO = (43.6532, -79.3832)
-m = folium.Map(location=TORONTO, zoom_start=11.5, tiles=None, control_scale=True)
+m = folium.Map(location=TORONTO, zoom_start=12, tiles=None, control_scale=True)
 folium.TileLayer("CartoDB positron", control=False).add_to(m)  # hidden from LayerControl
 
 # Active groups by type
@@ -140,8 +140,10 @@ footer_tpl = Template("""
   </div>
   <div id="credits-content" style="display:none; padding:0 16px 12px 16px;">
     <div style="margin-bottom:10px;">
-      QueerMapTO builds on the <b>Queer Spaces database</b> created by the volunteers of the
-      Toronto Society of Architects (TSA).
+      QueerMapTO builds on the 
+      <a href="https://torontosocietyofarchitects.ca/toronto-queer-spaces/" target="_blank" rel="noopener noreferrer">
+        <b>Queer Spaces database</b>
+      </a> created by the volunteers of the Toronto Society of Architects (TSA).
     </div>
     <div style="margin-bottom:10px;">
       The TSA database was made possible thanks to the efforts of countless individuals including
@@ -149,10 +151,14 @@ footer_tpl = Template("""
       Samantha B., Simon L., and Spencer L.
     </div>
     <div style="margin-bottom:10px;">
-      It also incorporates contributions from members of the community — including the over one
-      thousand individuals who added their memories to the 2024 Pride Street Fair map — and the
+      It also incorporates contributions from members of the community, including the over one
+      thousand individuals who added their memories to the 2024 Pride Street Fair map and the
       class at the University of Waterloo School of Architecture, who helped to digitize these
       memories.
+    </div>
+    <div style="margin-bottom:10px;">
+      References and source materials are credited in the TSA database. 
+      Please see the TSA site for the full bibliography.
     </div>
   </div>
 </div>

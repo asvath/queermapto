@@ -1,4 +1,4 @@
-# QueerMapTO 🏳️‍🌈
+# QueerMapTO 🏳️‍🌈🇨🇦
 An interactive map of active and historical queer spaces in Toronto.
 
 ### Run locally
