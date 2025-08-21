@@ -55,17 +55,23 @@ dfc = df[mask_types & (df[STATUS_COL] != "active")].copy()
 TORONTO = (43.6532, -79.3832)
 m = folium.Map(location=TORONTO, zoom_start=12, tiles=None, control_scale=True)
 
-# Inject CSS *inside the Folium iframe* so popups stack above tiles on mobile
+# CSS INSIDE the Folium iframe
 m.get_root().html.add_child(Element("""
 <style>
 /* keep base tiles low; force popups highest */
-.leaflet-tile-pane   { z-index: 200 !important; }
-.leaflet-overlay-pane{ z-index: 400 !important; }
-.leaflet-marker-pane { z-index: 600 !important; }
-.leaflet-tooltip-pane{ z-index: 12000 !important; }
-.leaflet-popup-pane  { z-index: 13000 !important; }
+.leaflet-tile-pane    { z-index: 200 !important; }
+.leaflet-overlay-pane { z-index: 400 !important; }
+.leaflet-marker-pane  { z-index: 600 !important; }
+.leaflet-tooltip-pane { z-index: 12000 !important; }
+.leaflet-popup-pane   { z-index: 13000 !important; }
+
+/* ensure controls sit BELOW popups (fixes checkbox panel blocking) */
+.leaflet-top, .leaflet-bottom, .leaflet-control-container, .leaflet-control, .leaflet-control-layers {
+  z-index: 500 !important;
+}
+
 /* avoid clipping */
-.leaflet-container   { overflow: visible !important; }
+.leaflet-container    { overflow: visible !important; }
 </style>
 """))
 
@@ -131,7 +137,7 @@ for _, row in dfc.iterrows():
     ).add_to(group_closed)
 
 # controls + legend
-folium.LayerControl(collapsed=False).add_to(m)
+folium.LayerControl(collapsed=False, position="bottomleft").add_to(m)
 
 legend_rows = []
 for t in sorted(dfa["Category"].dropna().unique().tolist()):
@@ -188,7 +194,7 @@ class Footer(MacroElement):
         super().__init__()
         self._template = footer_tpl
 
-# optional tiny spacer inside the map iframe so controls don't sit under the footer
+# spacer so map controls don't sit under the footer
 m.get_root().html.add_child(Element('<div style="height:44px;"></div>'))
 
 # add the footer macro to the map root
