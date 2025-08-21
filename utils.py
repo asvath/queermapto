@@ -4,11 +4,11 @@ import folium
 from branca.element import MacroElement
 from jinja2 import Template
 
-from config import DESC_COL, TYPE_COL, SPACE_COL, DATA_FILEPATH
+from config import DESC_COL, TYPE_COL, SPACE_COL,LEGEND_HTML
 
 class IconLegend(MacroElement):
     """Custom Folium MacroElement to render a legend of icons/colors."""
-    def __init__(self, items, legend_html):
+    def __init__(self, items, legend_html: str = LEGEND_HTML):
         super().__init__()
         self._name = 'IconLegend'
         self.template = Template(legend_html)
