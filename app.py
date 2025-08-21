@@ -58,7 +58,7 @@ if not dfa.empty:
 else:
     center = (43.6540, -79.3820)  # Downtown Toronto fallback (Queen/City Hall area)
 
-m = folium.Map(location=center, zoom_start=14, tiles=None, control_scale=True)
+m = folium.Map(location=center, zoom_start=13, tiles=None, control_scale=True)
 
 # CSS INSIDE the Folium iframe
 m.get_root().html.add_child(Element("""
