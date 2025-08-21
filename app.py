@@ -53,12 +53,8 @@ dfc = df[mask_types & (df[STATUS_COL] != "active")].copy()
 # Build map
 # ---------------------------
 # Center on active points if present; otherwise fall back to downtown core
-if not dfa.empty:
-    center = (float(dfa["lat"].median()), float(dfa["lon"].median()))
-else:
-    center = (43.6540, -79.3820)  # Downtown Toronto fallback (Queen/City Hall area)
-
-m = folium.Map(location=center, zoom_start=13, tiles=None, control_scale=True)
+NATHAN_PHILLIPS = (43.6526, -79.3832)  # Nathan Phillips Square / Toronto City Hall
+m = folium.Map(location=NATHAN_PHILLIPS, zoom_start=13, tiles=None, control_scale=True)
 
 # CSS INSIDE the Folium iframe
 m.get_root().html.add_child(Element("""
