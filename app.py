@@ -10,21 +10,6 @@ from config import (
 )
 
 st.set_page_config(page_title="Queer Toronto Map", layout="wide")
-
-st.markdown("""
-<style>
-/* Keep base tiles low; popups highest */
-.leaflet-tile-pane   { z-index: 200 !important; }
-.leaflet-overlay-pane{ z-index: 400 !important; }
-.leaflet-marker-pane { z-index: 600 !important; }
-.leaflet-tooltip-pane{ z-index: 6500 !important; }
-.leaflet-popup-pane  { z-index: 7000 !important; }
-
-/* Prevent popups from getting clipped in small iframes */
-.leaflet-container { overflow: visible !important; }
-</style>
-""", unsafe_allow_html=True)
-
 st.markdown(
     """
     <h1 style="display:flex; align-items:center; gap:12px;">
@@ -68,6 +53,19 @@ dfc = df[mask_types & (df[STATUS_COL] != "active")].copy()
 # ---------------------------
 TORONTO = (43.6532, -79.3832)
 m = folium.Map(location=TORONTO, zoom_start=12, tiles=None, control_scale=True)
+leaflet_css = """
+<style>
+/* keep tiles low; popups highest (inside the map iframe) */
+.leaflet-tile-pane   { z-index: 200 !important; }
+.leaflet-overlay-pane{ z-index: 400 !important; }
+.leaflet-marker-pane { z-index: 600 !important; }
+.leaflet-tooltip-pane{ z-index: 12000 !important; }
+.leaflet-popup-pane  { z-index: 13000 !important; }
+/* prevent clipping inside the iframe */
+.leaflet-container   { overflow: visible !important; }
+</style>
+"""
+m.get_root().header.add_child(Element(leaflet_css))
 folium.TileLayer("CartoDB positron", control=False).add_to(m)  # hidden from LayerControl
 
 # Active groups by type
