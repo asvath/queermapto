@@ -11,6 +11,20 @@ from config import (
 
 st.set_page_config(page_title="Queer Toronto Map", layout="wide")
 
+st.markdown("""
+<style>
+/* Keep base tiles low; popups highest */
+.leaflet-tile-pane   { z-index: 200 !important; }
+.leaflet-overlay-pane{ z-index: 400 !important; }
+.leaflet-marker-pane { z-index: 600 !important; }
+.leaflet-tooltip-pane{ z-index: 6500 !important; }
+.leaflet-popup-pane  { z-index: 7000 !important; }
+
+/* Prevent popups from getting clipped in small iframes */
+.leaflet-container { overflow: visible !important; }
+</style>
+""", unsafe_allow_html=True)
+
 st.markdown(
     """
     <h1 style="display:flex; align-items:center; gap:12px;">
