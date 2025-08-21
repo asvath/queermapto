@@ -36,15 +36,10 @@ df = df.dropna(subset=["lat", "lon"])
 df[STATUS_COL] = df[STATUS_COL].fillna("").str.strip().str.lower()
 df["Category"] = df.apply(normalize_type, axis=1)
 
-# ---------------------------
-# Sidebar filters
-# ---------------------------
-st.sidebar.header("Filters")
-show_active = st.sidebar.checkbox("Show Active", value=True)
-show_closed = st.sidebar.checkbox("Show Closed (Historical)", value=False)
-
+show_active = True        # always show active
+show_closed = False       # don't show closed by default
 present_types = sorted(df["Category"].unique().tolist())
-sel_types = st.sidebar.multiselect("Types", present_types, default=present_types)
+sel_types = present_types # include all categories
 mask_types = df["Category"].isin(sel_types)
 
 # filtered frames
@@ -56,7 +51,8 @@ dfc = df[mask_types & (df[STATUS_COL] != "active")].copy()
 # Build map
 # ---------------------------
 TORONTO = (43.6532, -79.3832)
-m = folium.Map(location=TORONTO, zoom_start=11, tiles="CartoDB positron", control_scale=True)
+m = folium.Map(location=TORONTO, zoom_start=11.5, tiles=None, control_scale=True)
+folium.TileLayer("CartoDB positron", control=False).add_to(m)  # hidden from LayerControl
 
 # Active groups by type
 groups_active = {}
