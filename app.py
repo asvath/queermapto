@@ -24,6 +24,7 @@ st.markdown(
 )
 
 st.caption("Explore Toronto’s queer history and community with this interactive map of active and historical spaces.")
+
 # ---------------------------
 # Load & clean
 # ---------------------------
@@ -53,19 +54,22 @@ dfc = df[mask_types & (df[STATUS_COL] != "active")].copy()
 # ---------------------------
 TORONTO = (43.6532, -79.3832)
 m = folium.Map(location=TORONTO, zoom_start=12, tiles=None, control_scale=True)
-leaflet_css = """
+
+# Inject CSS *inside the Folium iframe* so popups stack above tiles on mobile
+m.get_root().html.add_child(Element("""
 <style>
-/* keep tiles low; popups highest (inside the map iframe) */
+/* keep base tiles low; force popups highest */
 .leaflet-tile-pane   { z-index: 200 !important; }
 .leaflet-overlay-pane{ z-index: 400 !important; }
 .leaflet-marker-pane { z-index: 600 !important; }
 .leaflet-tooltip-pane{ z-index: 12000 !important; }
 .leaflet-popup-pane  { z-index: 13000 !important; }
-/* prevent clipping inside the iframe */
+/* avoid clipping */
 .leaflet-container   { overflow: visible !important; }
 </style>
-"""
-m.get_root().header.add_child(Element(leaflet_css))
+"""))
+
+# Basemap
 folium.TileLayer("CartoDB positron", control=False).add_to(m)  # hidden from LayerControl
 
 # Active groups by type
@@ -103,6 +107,7 @@ for _, row in dfa.iterrows():
         tooltip=f"{name} ({typ})",
         popup=folium.Popup(popup_html, max_width=320),
         icon=folium.Icon(color=color, icon=icon_name, prefix="fa"),
+        z_index_offset=650,  # small lift helps stacking
     ).add_to(grp)
 
 # Closed markers (black X)
@@ -122,6 +127,7 @@ for _, row in dfc.iterrows():
         tooltip=f"{name} (Closed)",
         popup=folium.Popup(popup_html, max_width=320),
         icon=folium.Icon(color=ICON_CLOSED[1], icon=ICON_CLOSED[0], prefix="fa"),
+        z_index_offset=650,
     ).add_to(group_closed)
 
 # controls + legend
@@ -142,7 +148,7 @@ footer_tpl = Template("""
      position: fixed; bottom: 0; left: 0; width: 100%;
      background: rgba(255,255,255,0.94);
      font-size: 12px; font-family: Arial, sans-serif; line-height: 1.45;
-     box-shadow: 0 -1px 6px rgba(0,0,0,0.18); z-index: 999999;">
+     box-shadow: 0 -1px 6px rgba(0,0,0,0.18); z-index: 250; pointer-events: none;">
   <div id="credits-header" style="padding:8px 16px; cursor:pointer; font-weight:700;"
        onclick="var c=document.getElementById('credits-content');
                 var h=document.getElementById('credits-header');
