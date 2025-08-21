@@ -1,9 +1,10 @@
 import os
 
-BASE_DIR = r'C:\Users\ashaa\OneDrive\Desktop\QueerMapTO'  # Root of project
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Root of project
 
-DATA_DIR = os.path.join(BASE_DIR, 'data')
-DATA_FILEPATH = os.path.join(DATA_DIR, "queer_toronto_spaces.csv" )
+# Paths relative to the project root
+DATA_DIR = os.path.join(BASE_DIR, "data")
+DATA_FILEPATH = os.path.join(DATA_DIR, "queer_toronto_spaces.csv")
 
 DESC_COL   = "Short Description / History"
 TYPE_COL   = "Type of Space"
