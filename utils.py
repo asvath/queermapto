@@ -106,6 +106,16 @@ def normalize_type(row:pd.Series) -> str:
     if re.search(r"\b(memorial)\b", name, re.I):
         cat = "Memorial"
 
+    # Apartment / Residential
+    if re.search(r"\b(apartment|residential|condo|residence|housing|tenement|tower)\b", text, re.I):
+        cat = "Residential"
+
+    # Gym / Sports
+    if re.search(
+            r"\b(gym|fitness|workout|yoga|dojo|martial\s*arts|boxing|crossfit|athletic|sports\s*centre|arena|stadium|court|rink|fieldhouse)\b",
+            text, re.I):
+        cat = "Gym/Sports"
+
     # beaches/parks/squares
     if any(k in text for k in ["beach", "park", "trail", "square", "plaza", "field"]):
         if cat in ["Other", "Cultural", "Retail"]:
