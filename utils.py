@@ -97,8 +97,9 @@ def normalize_type(row:pd.Series) -> str:
         cat = "Community Centre"
 
     # avoid Church Street false positives
-    if (re.search(r"\b(church|cathedral|chapel|parish)\b", text, re.I)
-            and not re.search(r"church\s*(street|st\.?)|\bchurch-wellesley\b", text, re.I)):
+    # Church (only if in the NAME, not general text)
+    if (re.search(r"\b(church|cathedral|chapel|parish)\b", name, re.I)
+            and not re.search(r"church\s*(street|st\.?)|\bchurch-wellesley\b", name, re.I)):
         cat = "Church"
 
     # beaches/parks/squares
