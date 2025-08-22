@@ -14,21 +14,22 @@ COORDS_COL = "Coordinates"
 
 # Font Awesome 4.7 icon names + folium colors
 ICON_MAP_ACTIVE = {
-    "Apartment/Residential": ("building", "darkgreen"),
-    "Bar": ("beer", "lightpink"),             # FA4 'beer' works for bars/pubs
-    "Bathhouse": ("tint", "blue"),
-    "Church": ("plus", "cadetblue"),          # FA4 has no 'cross'; 'plus' reads like a cross
+    "Residential": ("building", "darkgreen"),
+    "Bar": ("beer", "lightred"),
+    "BathHouse": ("tint", "blue"),
+    "Church": ("plus", "cadetblue"),
     "Club": ("music", "darkred"),
     "Community Centre": ("home", "orange"),
     "Cultural": ("university", "darkpurple"),
-    "Gym/Sports": ("futbol-o", "darkorange"),
+    "Gym/Sports": ("bolt", "lightgreen"),
     "Health": ("medkit", "red"),
     "Memorial": ("flag", "lightgray"),
     "Open Space": ("tree", "green"),
     "Other": ("info", "gray"),
     "Public Art": ("paint-brush", "purple"),
     "Restaurant": ("cutlery", "pink"),
-    "Retail": ("shopping-cart", "lightred"),
+    "Retail": ("shopping-cart", "darkblue"),
+    "Shelter": ("bed", "beige"),
 }
 ICON_CLOSED = ("times", "black")              # black X for closed/historical
 
