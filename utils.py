@@ -65,11 +65,7 @@ def normalize_type(row:pd.Series) -> str:
     text = f"{name} {desc}"
 
     # start from type_of_space label
-    if any(s in type_of_space for s in ["bar", "club", "restaurant"]):
-        cat = "Bar/Club/Restaurant"
-    elif any(k in type_of_space for k in ["bath","bathhouse"]):
-        cat = "Bathhouse"
-    elif "retail" in type_of_space:
+    if "retail" in type_of_space:
         cat = "Retail"
     elif "public art" in type_of_space:
         cat = "Public Art"
