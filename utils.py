@@ -83,6 +83,17 @@ def normalize_type(row:pd.Series) -> str:
         cat = "Other"
 
     # overrides via name/description
+    # Restaurant / Bar / Club (with lounge → Club)
+    if re.search(r"\b(restaurant|eatery|bistro|diner|trattoria|osteria|taqueria)\b", text, re.I):
+        cat = "Restaurant"
+    elif re.search(r"\b(bar|pub|tavern)\b", text, re.I):
+        cat = "Bar"
+    elif re.search(r"\b(club|lounge|night\s*club|nightclub|discotheque|disco)\b", text, re.I):
+        cat = "Club"
+    # Bathhouse (includes sauna/steam/hammam)
+    if re.search(r"\b(bathhouse|bath\s*house|sauna|steam\s*room|hammam)\b", text, re.I):
+        cat = "Bathhouse"
+
     if re.search(r"\b(clinic|hospital|aids|hiv|sexual\s*health|casey house|wellness|testing)\b", text, re.I):
         cat = "Health"
 
