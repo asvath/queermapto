@@ -21,7 +21,7 @@ ICON_MAP_ACTIVE = {
     "Community Centre": ("home", "orange"),
     "Cultural": ("university", "darkpurple"),
     "Health": ("medkit", "red"),
-    "Memorial": ("flag", "white"),            # white for contrast against Closed (black)
+    "Memorial": ("flag", "lightgray"),            # white for contrast against Closed (black)
     "Open Space": ("tree", "green"),
     "Other": ("info", "gray"),
     "Public Art": ("paint-brush", "purple"),
