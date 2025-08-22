@@ -60,7 +60,7 @@ dfc = df[mask_types & (df[STATUS_COL] != "active")].copy()
 # ---------------------------
 # Build map
 # ---------------------------
-# Center on active points if present; otherwise fall back to downtown core
+# Center on Nathan Phillips
 NATHAN_PHILLIPS = (43.6526, -79.3832)
 m = folium.Map(location=NATHAN_PHILLIPS, zoom_start=13, tiles=None, control_scale=True)
 
