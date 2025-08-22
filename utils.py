@@ -79,7 +79,13 @@ def normalize_type(row:pd.Series) -> str:
         cat = "Other"
 
     # overrides via name/description
-    # Restaurant / Bar / Club (with lounge → Club)
+    # avoid Church Street false positives
+    # Church (only if in the NAME, not general text)
+    if (re.search(r"\b(church|cathedral|chapel|parish)\b", name, re.I)
+            and not re.search(r"church\s*(street|st\.?)|\bchurch-wellesley\b", name, re.I)):
+        cat = "Church"
+
+    # Restaurant / Bar / Club into separate categories
     if re.search(r"\b(restaurant|eatery|bistro|diner|trattoria|osteria|taqueria)\b", text, re.I):
         cat = "Restaurant"
     elif re.search(r"\b(bar|pub|tavern)\b", text, re.I):
@@ -96,11 +102,9 @@ def normalize_type(row:pd.Series) -> str:
     if re.search(r"\b(the 519|community\s+centre|community\s+center|resource\s+centre|resource\s+center)\b", text, re.I):
         cat = "Community Centre"
 
-    # avoid Church Street false positives
-    # Church (only if in the NAME, not general text)
-    if (re.search(r"\b(church|cathedral|chapel|parish)\b", name, re.I)
-            and not re.search(r"church\s*(street|st\.?)|\bchurch-wellesley\b", name, re.I)):
-        cat = "Church"
+    # Memorial (only if in the NAME, not general text)
+    if re.search(r"\b(memorial)\b", name, re.I):
+        cat = "Memorial"
 
     # beaches/parks/squares
     if any(k in text for k in ["beach", "park", "trail", "square", "plaza", "field"]):
