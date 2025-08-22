@@ -17,10 +17,11 @@ ICON_MAP_ACTIVE = {
     "Bar": ("beer", "lightpink"),             # FA4 'beer' works for bars/pubs
     "Bathhouse": ("tint", "blue"),
     "Church": ("plus", "cadetblue"),          # FA4 has no 'cross'; 'plus' reads like a cross
+    "Club": ("music", "darkred"),             # 'music' fits dance/club vibe
     "Community Centre": ("home", "orange"),
     "Cultural": ("university", "darkpurple"),
     "Health": ("medkit", "red"),
-    "Club": ("music", "darkred"),             # 'music' fits dance/club vibe
+    "Memorial": ("flag", "white"),            # white for contrast against Closed (black)
     "Open Space": ("tree", "green"),
     "Other": ("info", "gray"),
     "Public Art": ("paint-brush", "purple"),
