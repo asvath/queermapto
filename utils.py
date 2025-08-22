@@ -71,50 +71,63 @@ def normalize_type(row:pd.Series) -> str:
         cat = "Public Art"
     elif "cultural" in type_of_space:
         cat = "Cultural"
+    elif "bathhouse" in type_of_space:
+        cat = "BathHouse"
     elif "cruising spot" in type_of_space:
         cat = "Open Space"
     elif "open space" in type_of_space:
         cat = "Open Space"
+    elif any(k in type_of_space.lower() for k in ["bar", "restaurant", "club"]):
+        # Restaurant / Bar / Club into separate categories
+        if re.search(r"\b(restaurant|eatery|bistro|diner|trattoria|osteria|taqueria)\b", text, re.I):
+            cat = "Restaurant"
+        elif re.search(r"\b(bar|pub|tavern)\b", text, re.I):
+            cat = "Bar"
+        elif re.search(r"\b(club|lounge|night\s*club|nightclub|discotheque|disco)\b", text, re.I):
+            cat = "Club"
+        else:
+            cat = "Bar"
     else:
         cat = "Other"
 
-    # overrides via name/description
-    # avoid Church Street false positives
-    # Church (only if in the NAME, not general text)
-    if (re.search(r"\b(church|cathedral|chapel|parish)\b", name, re.I)
-            and not re.search(r"church\s*(street|st\.?)|\bchurch-wellesley\b", name, re.I)):
-        cat = "Church"
+    # Only apply these when labels is too generic
+    if cat in ("Other", "Open Space"):
+        # Church (only if in the NAME, not general text; avoid Church Street/Wellesley)
+        if (re.search(r"\b(church|cathedral|chapel|parish)\b", name, re.I)
+                and not re.search(r"church\s*(street|st\.?)|\bchurch-wellesley\b", name, re.I)):
+            cat = "Church"
+        # Shelter
+        elif re.search(r"\b(shelter|drop[-\s]*in|refuge|homeless|safe\s*house)\b", text, re.I):
+            cat = "Shelter"
 
-    # Restaurant / Bar / Club into separate categories
-    if re.search(r"\b(restaurant|eatery|bistro|diner|trattoria|osteria|taqueria)\b", text, re.I):
-        cat = "Restaurant"
-    elif re.search(r"\b(bar|pub|tavern)\b", text, re.I):
-        cat = "Bar"
-    elif re.search(r"\b(club|lounge|night\s*club|nightclub|discotheque|disco)\b", text, re.I):
-        cat = "Club"
-    # Bathhouse (includes sauna/steam/hammam)
-    if re.search(r"\b(bathhouse|bath\s*house|sauna|steam\s*room|hammam)\b", text, re.I):
-        cat = "Bathhouse"
+        # Memorial (only if in the NAME, not general text)
+        elif re.search(r"\b(memorial)\b", name, re.I):
+            cat = "Memorial"
 
-    if re.search(r"\b(clinic|hospital|aids|hiv|sexual\s*health|casey house|wellness|testing)\b", text, re.I):
-        cat = "Health"
+        # Apartment / Residential
+        elif re.search(r"\b(apartment|residential|condo|residence|housing|tenement|tower)\b", text, re.I):
+            cat = "Residential"
 
-    if re.search(r"\b(the 519|community\s+centre|community\s+center|resource\s+centre|resource\s+center)\b", text, re.I):
-        cat = "Community Centre"
+        # Community Centre
+        elif re.search(
+                r"\b(the 519|community\s+centre|community\s+center|resource\s+centre|resource\s+center"
+                r"|youth\s+service|youth\s+centre|youth\s+center|safe[-\s]*space)\b",
+                text, re.I):
+            cat = "Community Centre"
 
-    # Memorial (only if in the NAME, not general text)
-    if re.search(r"\b(memorial)\b", name, re.I):
-        cat = "Memorial"
+        # Health
+        elif re.search(r"\b(clinic|hospital|aids|hiv|health|sexual\s*health|casey house|wellness|testing)\b",
+                       text, re.I):
+            cat = "Health"
 
-    # Apartment / Residential
-    if re.search(r"\b(apartment|residential|condo|residence|housing|tenement|tower)\b", text, re.I):
-        cat = "Residential"
 
-    # Gym / Sports
-    if re.search(
-            r"\b(gym|fitness|workout|yoga|dojo|martial\s*arts|boxing|crossfit|athletic|sports\s*centre|arena|stadium|court|rink|fieldhouse)\b",
-            text, re.I):
-        cat = "Gym/Sports"
+
+        # Gym / Sports
+        elif re.search(
+                r"\b(gym|fitness|workout|yoga|dojo|martial\s*arts|boxing|crossfit|athletic|sports\s*centre|arena|stadium|court|rink|fieldhouse)\b",
+                text, re.I):
+            cat = "Gym/Sports"
+
 
     # beaches/parks/squares
     if any(k in text for k in ["beach", "park", "trail", "square", "plaza", "field"]):
