@@ -27,8 +27,10 @@ st.caption(
     "Explore Toronto’s queer history and community with this interactive map of active and historical spaces.\n\n"
     "**Acknowledgment & Credits** — QueerMapTO builds on the "
     "[**Queer Spaces Database**](https://torontosocietyofarchitects.ca/toronto-queer-spaces/) "
-    "created by volunteers of the Toronto Society of Architects (TSA). It also incorporates contributions "
-    "from community members (including those who added memories to the 2024 Pride Street Fair map) and the "
+    "created by volunteers of the Toronto Society of Architects (TSA). This database was made possible through the"
+    " efforts of countless individuals, including Janice M., Kurtis C., Joël L., Amanda E., Cherisse T., Eric W., "
+    "Kate R., Rebecca P., Ryan F., Samantha B., Simon L., and Spencer L. It also incorporates contributions "
+    "from community members including those who added memories to the 2024 Pride Street Fair map and the "
     "University of Waterloo School of Architecture class. References and source materials are credited in "
     "TSA's Queer Spaces Database."
 )
@@ -36,15 +38,17 @@ st.caption(
 # ---------------------------
 # Load & clean
 # ---------------------------
-df = read_csv(DATA_FILEPATH)
 
-# coords
-df["lat"], df["lon"] = zip(*df[COORDS_COL].map(parse_latlon))
-df = df.dropna(subset=["lat", "lon"])
+@st.cache_data
+def load_data(path):
+    df = read_csv(path)
+    df["lat"], df["lon"] = zip(*df[COORDS_COL].map(parse_latlon))
+    df = df.dropna(subset=["lat", "lon"])
+    df[STATUS_COL] = df[STATUS_COL].fillna("").str.strip().str.lower()
+    df["Category"] = df.apply(normalize_type, axis=1)
+    return df
 
-# normalize status & category
-df[STATUS_COL] = df[STATUS_COL].fillna("").str.strip().str.lower()
-df["Category"] = df.apply(normalize_type, axis=1)
+df = load_data(DATA_FILEPATH)
 
 show_active = True        # always show active
 show_closed = False       # don't show closed by default
@@ -63,21 +67,6 @@ dfc = df[mask_types & (df[STATUS_COL] != "active")].copy()
 # Center on Nathan Phillips
 NATHAN_PHILLIPS = (43.6526, -79.3832)
 m = folium.Map(location=NATHAN_PHILLIPS, zoom_start=13, tiles=None, control_scale=True)
-
-# CSS inside Folium iframe
-m.get_root().html.add_child(Element("""
-<style>
-.leaflet-tile-pane    { z-index: 200 !important; }
-.leaflet-overlay-pane { z-index: 400 !important; }
-.leaflet-marker-pane  { z-index: 600 !important; }
-.leaflet-tooltip-pane { z-index: 12000 !important; }
-.leaflet-popup-pane   { z-index: 13000 !important; }
-.leaflet-top, .leaflet-bottom, .leaflet-control-container, .leaflet-control, .leaflet-control-layers {
-  z-index: 500 !important;
-}
-.leaflet-container { overflow: visible !important; }
-</style>
-"""))
 
 # Basemap
 folium.TileLayer("CartoDB positron", control=False).add_to(m)
