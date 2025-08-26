@@ -1,7 +1,6 @@
 import folium
 import streamlit as st
-from branca.element import Element
-from streamlit_folium import st_folium
+import streamlit.components.v1 as components
 
 from config import (
     DATA_FILEPATH, COORDS_COL, STATUS_COL, DESC_COL, SPACE_COL,
@@ -142,4 +141,5 @@ for _, row in dfc.iterrows():
 folium.LayerControl(collapsed=False, position="bottomleft").add_to(m)
 
 # --- Render ---
-st_folium(m, height=720, width=None)
+html = m.get_root().render() # render once
+components.html(html, height=720, scrolling=False)
