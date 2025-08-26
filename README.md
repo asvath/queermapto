@@ -1,12 +1,17 @@
 # QueerMapTO 🏳️‍🌈🇨🇦
 An interactive map of active and historical queer spaces in Toronto.
 
+## Live site
+You can access the app online at: **[www.queermapto.ca](http://www.queermapto.ca)**
+![QueerMapTO Screenshot](queermapto.jpg)
+
 ### Run locally
 Clone the repository and install requirements:
 ```bash
 git clone https://github.com/asvath/queermapto.git
 cd queermapto
 pip install -r requirements.txt
+streamlit run app.py
 ```
 
 ## Acknowledgments & Credits
