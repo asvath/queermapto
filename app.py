@@ -8,7 +8,7 @@ from config import (
 )
 from utils import read_csv, parse_latlon, normalize_type
 
-st.set_page_config(page_title="Queer Toronto Map", layout="wide")
+st.set_page_config(page_title="Queer Map TO", layout="wide")
 st.markdown(
     """
     <h1 style="display:flex; align-items:center; gap:12px;">
