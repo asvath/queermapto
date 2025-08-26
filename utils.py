@@ -1,24 +1,7 @@
 import re
 import pandas as pd
-import folium
-from branca.element import MacroElement
-from jinja2 import Template
 
-from config import DESC_COL, TYPE_COL, SPACE_COL,LEGEND_HTML
-
-class IconLegend(MacroElement):
-    """Custom Folium MacroElement to render a legend of icons/colors."""
-    def __init__(self, items, legend_html: str = LEGEND_HTML):
-        super().__init__()
-        self._name = 'IconLegend'
-        self.template = Template(legend_html)
-        self.items = items
-
-    def render(self, **kwargs):
-        figure = self.get_root()
-        macro = self.template.module.html
-        figure.header.add_child(folium.Element(macro(self, {})), name='icon-legend')
-
+from config import DESC_COL, TYPE_COL, SPACE_COL
 
 def read_csv(filepath: str) -> pd.DataFrame:
     """
