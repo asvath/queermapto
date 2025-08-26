@@ -1,13 +1,13 @@
-import streamlit as st
 import folium
-from branca.element import MacroElement, Template, Element
+import streamlit as st
+from branca.element import Element
 from streamlit_folium import st_folium
 
-from utils import read_csv, parse_latlon, normalize_type, IconLegend
 from config import (
     DATA_FILEPATH, COORDS_COL, STATUS_COL, DESC_COL, SPACE_COL,
-    ICON_MAP_ACTIVE, ICON_CLOSED, LEGEND_HTML
+    ICON_MAP_ACTIVE, ICON_CLOSED
 )
+from utils import read_csv, parse_latlon, normalize_type
 
 st.set_page_config(page_title="Queer Toronto Map", layout="wide")
 st.markdown(
@@ -151,12 +151,6 @@ for _, row in dfc.iterrows():
 
 # --- Controls + legend (Closed first, then alphabetical) ---
 folium.LayerControl(collapsed=False, position="bottomleft").add_to(m)
-
-legend_rows = [("Closed (Historical)", ICON_CLOSED[0], ICON_CLOSED[1])]
-for t in sorted(dfa["Category"].dropna().unique().tolist()):
-    icon, color = ICON_MAP_ACTIVE.get(t, ("info", "gray"))
-    legend_rows.append((t, icon, color))
-IconLegend(legend_rows, LEGEND_HTML).add_to(m)
 
 # --- Render ---
 st_folium(m, height=720, width=None)
