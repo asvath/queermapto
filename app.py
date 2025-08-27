@@ -18,7 +18,7 @@ st.markdown(
              alt="Pride Flag" width="40">
         <h1 style="margin:0;">QueerMapTO</h1>
     </div>
-    <p style="font-size:24px; margin-top:0px;">
+    <p style="font-size:18px; margin-top:0px;">
         Explore Toronto’s queer history and community with this interactive map of active and historical spaces.
     </p>
     """,
