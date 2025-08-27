@@ -2,7 +2,7 @@
 An interactive map of active and historical queer spaces in Toronto.
 
 ## Live site
-You can access the app online at: **[www.queermapto.ca](http://www.queermapto.ca)**
+You can access the app online at: **[https://queermapto.ca](http://www.queermapto.ca)**
 ![QueerMapTO Screenshot](queermapto.jpg)
 
 ### Run locally
