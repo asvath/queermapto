@@ -30,7 +30,7 @@ st.caption(
     "**Acknowledgment & Credits:** "
     " \n\n QueerMapTO builds on the "
     "[**Queer Spaces Database**](https://torontosocietyofarchitects.ca/toronto-queer-spaces/) "
-    "created by volunteers of the Toronto Society of Architects (TSA). This database was made possible through the"
+    "created by volunteers of the Toronto Society of Architects (TSA). The database was made possible through the"
     " efforts of countless individuals, including Janice M., Kurtis C., Joël L., Amanda E., Cherisse T., Eric W., "
     "Kate R., Rebecca P., Ryan F., Samantha B., Simon L., and Spencer L."
     " It also incorporates contributions from community members including those who added memories to the 2024 Pride "
