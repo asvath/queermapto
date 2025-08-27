@@ -8,27 +8,31 @@ from config import (
 )
 from utils import read_csv, parse_latlon, normalize_type
 
-st.set_page_config(page_title="Queer Map TO", layout="wide")
+st.set_page_config(page_title="QueerMapTO", layout="wide")
 st.markdown(
     """
-    <h1 style="display:flex; align-items:center; gap:12px;">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Canada_%28Pantone%29.svg/320px-Flag_of_Canada_%28Pantone%29.svg.png" 
-           alt="Canadian Flag" width="40">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Gay_Pride_Flag.svg/240px-Gay_Pride_Flag.svg.png" 
-           alt="Pride Flag" width="40">
-      Map of Queer Spaces in Toronto
-    </h1>
+    <div style="display:flex; align-items:center; gap:12px;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Canada_%28Pantone%29.svg/320px-Flag_of_Canada_%28Pantone%29.svg.png" 
+             alt="Canadian Flag" width="40">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Gay_Pride_Flag.svg/240px-Gay_Pride_Flag.svg.png" 
+             alt="Pride Flag" width="40">
+        <h1 style="margin:0;">QueerMapTO</h1>
+    </div>
+    <p style="font-size:24px; margin-top:0px;">
+        Explore Toronto’s queer history and community with this interactive map of active and historical spaces.
+    </p>
     """,
     unsafe_allow_html=True,
 )
 
 st.caption(
-    "Explore Toronto’s queer history and community with this interactive map of active and historical spaces.\n\n"
-    "**Acknowledgment & Credits** — QueerMapTO builds on the "
+    "\n\n"
+    "**Acknowledgment & Credits:** "
+    " \n\n QueerMapTO builds on the "
     "[**Queer Spaces Database**](https://torontosocietyofarchitects.ca/toronto-queer-spaces/) "
     "created by volunteers of the Toronto Society of Architects (TSA). This database was made possible through the"
     " efforts of countless individuals, including Janice M., Kurtis C., Joël L., Amanda E., Cherisse T., Eric W., "
-    "Kate R., Rebecca P., Ryan F., Samantha B., Simon L., and Spencer L. \n\n"
+    "Kate R., Rebecca P., Ryan F., Samantha B., Simon L., and Spencer L."
     " It also incorporates contributions from community members including those who added memories to the 2024 Pride "
     "Street Fair map and the University of Waterloo School of Architecture class."
     " References and source materials are credited in TSA's Queer Spaces Database."
