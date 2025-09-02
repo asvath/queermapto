@@ -38,6 +38,10 @@ st.caption(
     " References and source materials are credited in TSA's Queer Spaces Database."
 )
 
+st.caption(
+    "**Created by [Asha Asvathaman](https://www.ashaasvathaman.com)**"
+)
+
 # ---------------------------
 # Load & clean
 # ---------------------------
