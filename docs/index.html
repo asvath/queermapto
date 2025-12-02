@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QueerMapTO - Mapping Toronto's Queer Spaces</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <style>
+        :root {
+            /* Sleek dark palette */
+            --cherry: #ff006e;
+            --violet: #8338ec;
+            --cyan: #06ffa5;
+            --sunrise: #ffbe0b;
+            --black: #0a0a0a;
+            --dark-gray: #1a1a1a;
+            --mid-gray: #999;
+            --light-gray: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Archivo', -apple-system, sans-serif;
+            background: var(--black);
+            color: var(--light-gray);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Sleek minimal header with rainbow text */
+        header {
+            background: var(--dark-gray);
+            color: white;
+            padding: 1.5rem 2rem 1.25rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg,
+                rgba(255, 0, 110, 0.8),
+                rgba(131, 56, 236, 0.8),
+                rgba(6, 255, 165, 0.8),
+                rgba(255, 190, 11, 0.8),
+                rgba(255, 0, 110, 0.8)
+            );
+        }
+
+        h1 {
+            font-size: clamp(3.5rem, 8vw, 5.5rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+            background: linear-gradient(90deg,
+                #ff006e 0%,
+                #8338ec 20%,
+                #06ffa5 40%,
+                #ffbe0b 60%,
+                #ff006e 80%,
+                #8338ec 100%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbow-flow 4s linear infinite;
+        }
+
+        @keyframes rainbow-flow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .tagline {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: white;
+            font-weight: 400;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Modern Controls */
+        .controls {
+            max-width: 1400px;
+            margin: 3rem auto 2rem;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .filter-group label {
+            font-weight: 700;
+            color: white;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        select, input[type="text"] {
+            padding: 0.9rem 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            background: var(--dark-gray);
+            color: white;
+            font-family: 'Archivo', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        select:hover, input[type="text"]:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        select:focus, input[type="text"]:focus {
+            border-color: var(--cherry);
+            box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.1);
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--mid-gray);
+        }
+
+        /* Modern Legend */
+        .legend {
+            max-width: 1400px;
+            margin: 0 auto 3rem;
+            padding: 1.5rem 2rem;
+            background: var(--dark-gray);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .legend-title {
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        #legend-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--light-gray);
+            font-weight: 500;
+        }
+
+        .legend-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .legend-icon i {
+            color: white;
+            font-size: 11px;
+        }
+
+        /* Map Container */
+        .map-container {
+            max-width: 1400px;
+            margin: 0 auto 4rem;
+            padding: 0 2rem;
+        }
+
+        #map {
+            height: 700px;
+            border-radius: 20px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Modern Popup */
+        .leaflet-popup-content-wrapper {
+            border-radius: 16px;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .leaflet-popup-tip {
+            display: none;
+        }
+
+        .popup-header {
+            background: linear-gradient(135deg, var(--cherry), var(--violet));
+            color: white;
+            padding: 1.25rem;
+        }
+
+        .popup-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .popup-status {
+            display: inline-block;
+            padding: 0.4rem 0.9rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .popup-body {
+            padding: 1.25rem;
+            background: white;
+            color: #333;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .popup-field {
+            margin-bottom: 1rem;
+        }
+
+        .popup-field:last-child {
+            margin-bottom: 0;
+        }
+
+        .popup-label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #999;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .popup-value {
+            display: block;
+            font-size: 1rem;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .popup-directions {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .popup-directions a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1rem;
+            background: linear-gradient(135deg, var(--cherry), var(--violet));
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .popup-directions a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 0, 110, 0.3);
+        }
+
+        .popup-directions i {
+            font-size: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-gray);
+            color: var(--light-gray);
+            padding: 3rem 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .footer-attribution {
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .footer-attribution p {
+            margin-bottom: 1rem;
+        }
+
+        .footer-links a {
+            color: var(--cherry);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--violet);
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem 1.5rem;
+            }
+
+            header img {
+                width: 90px !important;
+                height: 90px !important;
+                right: -110px !important;
+            }
+
+            h1 {
+                font-size: clamp(2.5rem, 10vw, 4rem);
+            }
+
+            .tagline {
+                font-size: 1rem;
+            }
+
+            .controls {
+                grid-template-columns: 1fr;
+                margin: 2rem auto 1.5rem;
+                padding: 0 1.5rem;
+                gap: 1rem;
+            }
+
+            .legend {
+                margin: 0 1.5rem 2rem;
+                padding: 1rem 1.5rem;
+            }
+
+            .legend-title {
+                font-size: 0.7rem;
+                margin-bottom: 0.75rem;
+            }
+
+            #legend-categories {
+                gap: 0.75rem;
+            }
+
+            .legend-item {
+                font-size: 0.75rem;
+            }
+
+            .legend-icon {
+                width: 20px;
+                height: 20px;
+            }
+
+            .legend-icon i {
+                font-size: 10px;
+            }
+
+            .map-container {
+                padding: 0 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            #map {
+                height: 500px;
+                border-radius: 12px;
+            }
+
+            footer {
+                padding: 2rem 1.5rem;
+            }
+
+            .footer-attribution {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            header img {
+                width: 70px !important;
+                height: 70px !important;
+                position: static !important;
+                transform: none !important;
+                display: block !important;
+                margin: 1rem auto 0 !important;
+            }
+
+            .controls {
+                padding: 0 1rem;
+            }
+
+            .legend {
+                margin: 0 1rem 1.5rem;
+                padding: 1rem;
+            }
+
+            #legend-categories {
+                gap: 0.5rem;
+            }
+
+            .legend-item {
+                font-size: 0.7rem;
+            }
+
+            .map-container {
+                padding: 0 1rem;
+            }
+
+            #map {
+                height: 400px;
+            }
+
+            footer {
+                padding: 1.5rem 1rem;
+            }
+
+            .popup-header {
+                padding: 1rem;
+            }
+
+            .popup-title {
+                font-size: 1.1rem;
+            }
+
+            .popup-body {
+                padding: 1rem;
+                max-height: 250px;
+            }
+
+            .popup-directions a {
+                width: 100%;
+                justify-content: center;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div style="position: relative; display: inline-block; margin: 0 auto;">
+            <h1 style="text-align: center;">QueerMapTO</h1>
+            <img src="images/queermaptologo.png" alt="QueerMapTO Logo" style="width: 120px; height: 120px; filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3)); position: absolute; right: -140px; top: 50%; transform: translateY(-50%);">
+        </div>
+        <p class="tagline">Explore Toronto's queer history and community with this interactive map of active and historical spaces.</p>
+    </header>
+
+    <div class="controls">
+        <div class="filter-group">
+            <label for="statusFilter">Status</label>
+            <select id="statusFilter">
+                <option value="all">All Spaces</option>
+                <option value="active" selected>Active Only</option>
+                <option value="closed">Historical Only</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="typeFilter">Type</label>
+            <select id="typeFilter">
+                <option value="all">All Types</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="searchBox">Search</label>
+            <input type="text" id="searchBox" placeholder="Search by name or location...">
+        </div>
+    </div>
+
+    <div class="legend">
+        <span class="legend-title">Map Legend</span>
+        <div id="legend-categories">
+            <!-- Categories will be populated dynamically -->
+        </div>
+    </div>
+
+    <div class="map-container">
+        <div id="map"></div>
+    </div>
+
+<footer>
+    <div class="footer-content">
+        <p class="footer-links"><strong>Data Source:</strong> QueerMapTO builds on the <a href="https://torontosocietyofarchitects.ca/toronto-queer-spaces/" target="_blank">Queer Spaces database</a> created by volunteers of the Toronto Society of Architects.</p>
+        <p><strong>Contributors:</strong> This database was made possible through the efforts of countless individuals, including Janice M., Kurtis C., Joël L., Amanda E., Cherisse T., Eric W., Kate R., Rebecca P., Ryan F., Samantha B., Simon L., and Spencer L.</p>
+
+        <p>It also incorporates input from the wider community, including contributors to the 2024 Pride Street Fair memory map and the University of Waterloo School of Architecture class who helped bring those memories into digital form.</p>
+
+        <p>We are deeply grateful to everyone who has helped keep Toronto's queer spaces and histories visible and accessible.</p>
+
+        <p class="footer-links">
+    Created by <a href="https://www.ashaasvathaman.com" target="_blank">Asha Asvathaman</a>
+    • <a href="https://ko-fi.com/ashaasvathaman" target="_blank">Buy me a coffee ☕</a>
+</p>
+    </div>
+</footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script>
+        // Icon map from config.py
+        const ICON_MAP_ACTIVE = {
+            "Residential": { icon: "building", color: "darkgreen" },
+            "Bar": { icon: "beer", color: "lightred" },
+            "BathHouse": { icon: "tint", color: "blue" },
+            "Church": { icon: "plus", color: "cadetblue" },
+            "Club": { icon: "music", color: "darkred" },
+            "Community Centre": { icon: "home", color: "orange" },
+            "Cultural": { icon: "university", color: "darkpurple" },
+            "Gym/Sports": { icon: "bolt", color: "lightgreen" },
+            "Health": { icon: "medkit", color: "red" },
+            "Memorial": { icon: "flag", color: "lightgray" },
+            "Open Space": { icon: "tree", color: "green" },
+            "Other": { icon: "info", color: "gray" },
+            "Public Art": { icon: "paint-brush", color: "purple" },
+            "Restaurant": { icon: "cutlery", color: "pink" },
+            "Retail": { icon: "shopping-cart", color: "darkblue" },
+            "Shelter": { icon: "bed", color: "beige" }
+        };
+
+        const ICON_CLOSED = { icon: "times", color: "black" };
+
+        // Leaflet color mapping
+        const colorMap = {
+            "darkgreen": "#2d5016",
+            "lightred": "#d63031",
+            "blue": "#0984e3",
+            "cadetblue": "#5f9ea0",
+            "darkred": "#8b0000",
+            "orange": "#e67e22",
+            "darkpurple": "#663399",
+            "lightgreen": "#90ee90",
+            "red": "#e74c3c",
+            "lightgray": "#d3d3d3",
+            "green": "#27ae60",
+            "gray": "#7f8c8d",
+            "purple": "#9b59b6",
+            "pink": "#ff69b4",
+            "darkblue": "#00008b",
+            "beige": "#f5f5dc",
+            "black": "#000000"
+        };
+
+        const map = L.map('map').setView([43.6532, -79.3832], 12);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            maxZoom: 19
+        }).addTo(map);
+
+        let markers = [];
+        let allSpaces = [];
+
+        // Normalization logic from utils.py
+        function normalizeType(row) {
+            const typeOfSpace = (row['Type of Space'] || '').toLowerCase();
+            const name = (row['Space'] || '').toLowerCase();
+            const desc = (row['Short Description / History'] || '').toLowerCase();
+            const text = `${name} ${desc}`;
+
+            let cat = "Other";
+
+            if (typeOfSpace.includes("retail")) {
+                cat = "Retail";
+            } else if (typeOfSpace.includes("public art")) {
+                cat = "Public Art";
+            } else if (typeOfSpace.includes("cultural")) {
+                cat = "Cultural";
+            } else if (typeOfSpace.includes("bathhouse")) {
+                cat = "BathHouse";
+            } else if (typeOfSpace.includes("cruising spot")) {
+                cat = "Open Space";
+            } else if (typeOfSpace.includes("open space")) {
+                cat = "Open Space";
+            } else if (/(bar|restaurant|club)/.test(typeOfSpace)) {
+                if (/\b(restaurant|eatery|bistro|diner|trattoria|osteria|taqueria)\b/i.test(text)) {
+                    cat = "Restaurant";
+                } else if (/\b(bar|pub|tavern)\b/i.test(text)) {
+                    cat = "Bar";
+                } else if (/\b(club|lounge|night\s*club|nightclub|discotheque|disco)\b/i.test(text)) {
+                    cat = "Club";
+                } else {
+                    cat = "Bar";
+                }
+            }
+
+            if (cat === "Other" || cat === "Open Space") {
+                if (/\b(church|cathedral|chapel|parish)\b/i.test(name) &&
+                    !/church\s*(street|st\.?)|\bchurch-wellesley\b/i.test(name)) {
+                    cat = "Church";
+                } else if (/\b(shelter|drop[-\s]*in|refuge|homeless|safe\s*house)\b/i.test(text)) {
+                    cat = "Shelter";
+                } else if (/\b(memorial)\b/i.test(name)) {
+                    cat = "Memorial";
+                } else if (/\b(apartment|residential|condo|residence|housing|tenement|tower)\b/i.test(text)) {
+                    cat = "Residential";
+                } else if (/\b(the 519|community\s+centre|community\s+center|resource\s+centre|resource\s+center|youth\s+service|youth\s+centre|youth\s+center|safe[-\s]*space)\b/i.test(text)) {
+                    cat = "Community Centre";
+                } else if (/\b(clinic|hospital|aids|hiv|health|sexual\s*health|casey house|wellness|testing)\b/i.test(text)) {
+                    cat = "Health";
+                } else if (/\b(gym|fitness|workout|yoga|dojo|martial\s*arts|boxing|crossfit|athletic|sports\s*centre|arena|stadium|court|rink|fieldhouse)\b/i.test(text)) {
+                    cat = "Gym/Sports";
+                }
+            }
+
+            if (/(beach|park|trail|square|plaza|field)/.test(text)) {
+                if (cat === "Other" || cat === "Cultural" || cat === "Retail") {
+                    cat = "Open Space";
+                }
+            }
+
+            return cat;
+        }
+
+        function parseLatLon(coord) {
+            if (!coord) return [null, null];
+            const parts = coord.replace(',', ' ').trim().split(/\s+/);
+            if (parts.length >= 2) {
+                const lat = parseFloat(parts[0]);
+                const lon = parseFloat(parts[1]);
+                if (!isNaN(lat) && !isNaN(lon)) {
+                    return [lat, lon];
+                }
+            }
+            return [null, null];
+        }
+
+        function createCustomIcon(status, type) {
+            const iconInfo = status === 'active' ? ICON_MAP_ACTIVE[type] || ICON_MAP_ACTIVE['Other'] : ICON_CLOSED;
+            const color = colorMap[iconInfo.color] || colorMap['gray'];
+
+            return L.divIcon({
+                className: 'custom-marker',
+                html: `<div style="
+                    background-color: ${color};
+                    width: 28px;
+                    height: 28px;
+                    border-radius: 50%;
+                    border: 3px solid white;
+                    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">
+                    <i class="fa fa-${iconInfo.icon}" style="color: white; font-size: 14px;"></i>
+                </div>`,
+                iconSize: [28, 28],
+                iconAnchor: [14, 14]
+            });
+        }
+
+        function addMarkers(spaces) {
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+
+            spaces.forEach(space => {
+                const icon = createCustomIcon(space.status, space.type);
+
+                const marker = L.marker([space.lat, space.lng], { icon: icon })
+                    .addTo(map);
+
+                const popupContent = `
+                    <div class="popup-header">
+                        <div class="popup-title">${space.name}</div>
+                        <div class="popup-status">${space.status === 'active' ? 'Active' : 'Historical'}</div>
+                    </div>
+                    <div class="popup-body">
+                        ${space.type ? `<div class="popup-field">
+                            <span class="popup-label">Type</span>
+                            <span class="popup-value">${space.type}</span>
+                        </div>` : ''}
+                        ${space.address ? `<div class="popup-field">
+                            <span class="popup-label">Address</span>
+                            <span class="popup-value">${space.address}</span>
+                        </div>` : ''}
+                        ${space.years ? `<div class="popup-field">
+                            <span class="popup-label">Years</span>
+                            <span class="popup-value">${space.years}</span>
+                        </div>` : ''}
+                        ${space.description ? `<div class="popup-field">
+                            <span class="popup-label">Description</span>
+                            <span class="popup-value">${space.description}</span>
+                        </div>` : ''}
+                        <div class="popup-directions">
+                            <a href="https://www.google.com/maps/dir/?api=1&destination=${space.lat},${space.lng}" target="_blank" rel="noopener noreferrer">
+                                <i class="fa fa-location-arrow"></i>
+                                Get Directions
+                            </a>
+                        </div>
+                    </div>
+                `;
+
+                marker.bindPopup(popupContent, { maxWidth: 320 });
+
+                marker.spaceData = space;
+                markers.push(marker);
+            });
+        }
+
+        function populateTypeFilter(spaces) {
+            const types = [...new Set(spaces.map(s => s.type).filter(Boolean))].sort();
+            const typeFilter = document.getElementById('typeFilter');
+
+            types.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                typeFilter.appendChild(option);
+            });
+        }
+
+        function populateLegend() {
+            const legendContainer = document.getElementById('legend-categories');
+
+            // Get all unique categories and sort them
+            const categories = Object.keys(ICON_MAP_ACTIVE).sort();
+
+            categories.forEach(category => {
+                const iconInfo = ICON_MAP_ACTIVE[category];
+                const color = colorMap[iconInfo.color] || colorMap['gray'];
+
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
+                legendItem.innerHTML = `
+                    <div class="legend-icon" style="background-color: ${color};">
+                        <i class="fa fa-${iconInfo.icon}"></i>
+                    </div>
+                    <span>${category}</span>
+                `;
+                legendContainer.appendChild(legendItem);
+            });
+
+            // Add historical marker
+            const historicalItem = document.createElement('div');
+            historicalItem.className = 'legend-item';
+            historicalItem.innerHTML = `
+                <div class="legend-icon" style="background-color: ${colorMap[ICON_CLOSED.color]};">
+                    <i class="fa fa-${ICON_CLOSED.icon}"></i>
+                </div>
+                <span>Historical/Closed</span>
+            `;
+            legendContainer.appendChild(historicalItem);
+        }
+
+        function filterMarkers() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+            const searchText = document.getElementById('searchBox').value.toLowerCase();
+
+            markers.forEach(marker => {
+                const space = marker.spaceData;
+                let show = true;
+
+                if (statusFilter !== 'all' && space.status !== statusFilter) {
+                    show = false;
+                }
+
+                if (typeFilter !== 'all' && space.type !== typeFilter) {
+                    show = false;
+                }
+
+                if (searchText) {
+                    const searchableText = `${space.name} ${space.address} ${space.description}`.toLowerCase();
+                    if (!searchableText.includes(searchText)) {
+                        show = false;
+                    }
+                }
+
+                if (show) {
+                    marker.addTo(map);
+                } else {
+                    map.removeLayer(marker);
+                }
+            });
+        }
+
+        // Load CSV data
+        Papa.parse('data/queer_toronto_spaces.csv', {
+            download: true,
+            header: true,
+            complete: function(results) {
+                allSpaces = results.data
+                    .map(row => {
+                        const [lat, lng] = parseLatLon(row['Coordinates']);
+                        if (lat === null || lng === null) return null;
+
+                        const status = (row['Active, closed or moved?'] || '').toLowerCase().trim();
+                        const category = normalizeType(row);
+
+                        return {
+                            name: (row['Space'] || '').trim(),
+                            status: status === 'active' ? 'active' : 'closed',
+                            type: category,
+                            address: (row['Address'] || '').trim(),
+                            lat: lat,
+                            lng: lng,
+                            years: (row['Years of Queer Association'] || '').trim(),
+                            description: (row['Short Description / History'] || '').trim()
+                        };
+                    })
+                    .filter(space => space !== null);
+
+                addMarkers(allSpaces);
+                populateTypeFilter(allSpaces);
+                populateLegend(); // Add legend with all category icons
+
+                document.getElementById('statusFilter').addEventListener('change', filterMarkers);
+                document.getElementById('typeFilter').addEventListener('change', filterMarkers);
+                document.getElementById('searchBox').addEventListener('input', filterMarkers);
+
+                // Filter to show only active spaces on initial load
+                filterMarkers();
+            }
+        });
+    </script>
+</body>
+</html>
